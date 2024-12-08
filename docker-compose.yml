@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.8"
 
 services:
   postgres:
@@ -7,37 +7,37 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: mydb
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: task_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/task_db
     depends_on:
       - postgres
-    environment:
-      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/mydb"
-    ports:
-      - "3000:3000"
     volumes:
       - ./backend:/app
+    ports:
+      - "3000:3000"
+    command: sh -c "pnpm install && npx prisma migrate dev && npx prisma generate && pnpm run dev"
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend
-    depends_on:
-      - backend
-    ports:
-      - "5173:5173" # Expose port 5173 for the frontend React app
     volumes:
       - ./frontend:/app
+    ports:
+      - "5173:5173"
+    command: sh -c "pnpm install && pnpm run dev"
 
 volumes:
   postgres_data:
