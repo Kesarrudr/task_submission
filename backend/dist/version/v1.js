@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.V1Route = void 0;
+const express_1 = require("express");
+const health_controller_1 = require("../controller/health.controller");
+const database_controller_1 = require("../controller/database.controller");
+const router = (0, express_1.Router)();
+exports.V1Route = router;
+router.use("/health", health_controller_1.HealthCheckController);
+router.use("/database", database_controller_1.DataBaseCotroller);
